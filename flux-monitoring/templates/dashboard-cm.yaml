@@ -1,0 +1,19 @@
+{{- $dashboards_path := printf "dashboards/*.json" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: flux
+    grafana_dashboard: "1"
+    kustomize.toolkit.fluxcd.io/name: monitoring-configs
+    kustomize.toolkit.fluxcd.io/namespace: {{ .Values.namespace }}
+  name: flux-grafana-dashboards
+  namespace: {{ .Values.namespace }}
+data:
+{{- range $path, $_ := .Files.Glob $dashboards_path }}
+{{- $dash := $.Files.Get $path }}
+{{- $name := (base $path) }}
+  {{ $name }}: |
+{{ $dash | indent 4 }}
+{{- end }}
