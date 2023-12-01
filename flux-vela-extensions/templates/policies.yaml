@@ -1,0 +1,15 @@
+{{- $templates_path := printf "cue/policies/*.cue" -}}
+{{ range $path, $_ := .Files.Glob $templates_path }}
+{{ $cue_template := $.Files.Get $path }}
+{{ $name := trimSuffix ".cue" (base $path) }}
+apiVersion: core.oam.dev/v1beta1
+kind: PolicyDefinition
+metadata:
+  name: "{{ $name }}"
+spec:
+  schematic:
+    cue:
+      template: |-
+{{ $cue_template | indent 8 }}
+---
+{{ end }}

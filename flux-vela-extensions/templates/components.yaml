@@ -1,0 +1,17 @@
+{{- $templates_path := printf "cue/components/*.cue" -}}
+{{ range $path, $_ := .Files.Glob $templates_path }}
+{{ $cue_template := $.Files.Get $path }}
+{{ $name := trimSuffix ".cue" (base $path) }}
+apiVersion: "core.oam.dev/v1beta1"
+kind: ComponentDefinition
+metadata:
+  name: "{{ $name }}"
+spec:
+  schematic:
+    cue:
+      template: |-
+{{ $cue_template | indent 8 }}
+  workload:
+    type: autodetects.core.oam.dev
+---
+{{ end }}
